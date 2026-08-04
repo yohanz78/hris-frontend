@@ -12,8 +12,7 @@ function FilterSidebar({
     <aside className="filter-panel">
       <div className="filter-panel__header">
         <div>
-          <p className="section-label">Filters</p>
-          <h2>Refine the roster</h2>
+          <h2>Filters</h2>
         </div>
         <button type="button" className="text-button" onClick={onClearFilters}>
           Clear

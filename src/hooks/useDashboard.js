@@ -88,9 +88,9 @@ export function useDashboard() {
     loadEmployeeDetail();
   }, [employeeDetailCache, expandedRowId]);
 
-  useEffect(() => {
-    console.log('EmplyeesList:', employeesList);
-  }, [employeesList]);
+  // useEffect(() => {
+  //   console.log('EmplyeesList:', employeesList);
+  // }, [employeesList]);
 
   const availableSkills = useMemo(() => {
     const skills = new Set();

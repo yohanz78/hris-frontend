@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 const DEFAULT_COMPETENCE = {
-  type: 'Certificate',
+  type: 'certificate',
   topic: '',
   description: '',
 };
@@ -73,8 +73,8 @@ function CompetenceBuilder({ onAddCompetence }) {
               updateCompetenceField('type', event.target.value)
             }
           >
-            <option value="Certificate">Certificate</option>
-            <option value="Project">Project</option>
+            <option value="certificate">Certificate</option>
+            <option value="project">Project</option>
           </select>
         </label>
 

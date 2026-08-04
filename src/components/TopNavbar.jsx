@@ -3,7 +3,7 @@ function TopNavbar({ stats, expandedRowId }) {
     <header className="topbar">
       <div>
         <p className="eyebrow">HRIS System</p>
-        <h1>Employee dashboard</h1>
+        <h1>Dashboard</h1>
         <p className="subtitle">
           Search, filter, and expand employee records without leaving the table.
         </p>
