@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const DEFAULT_COMPETENCE = {
   type: 'certificate',
@@ -6,11 +6,37 @@ const DEFAULT_COMPETENCE = {
   description: '',
 };
 
-function CompetenceBuilder({ onAddCompetence }) {
+function splitSkills(skillsText = '') {
+  return skillsText
+    .split(',')
+    .map((skill) => skill.trim())
+    .filter(Boolean);
+}
+
+function CompetenceBuilder({
+  editingIndex,
+  editingCompetence,
+  onSaveCompetence,
+  onCancelEditing,
+}) {
   const [currentCompetence, setCurrentCompetence] =
     useState(DEFAULT_COMPETENCE);
   const [currentSkills, setCurrentSkills] = useState([]);
   const [skillInputText, setSkillInputText] = useState('');
+
+  useEffect(() => {
+    if (!editingCompetence) {
+      return;
+    }
+
+    setCurrentCompetence({
+      type: editingCompetence.type || 'Certificate',
+      topic: editingCompetence.topic || '',
+      description: editingCompetence.description || '',
+    });
+    setCurrentSkills(splitSkills(editingCompetence.skills || ''));
+    setSkillInputText('');
+  }, [editingCompetence]);
 
   function updateCompetenceField(field, value) {
     setCurrentCompetence((currentValue) => ({
@@ -37,7 +63,7 @@ function CompetenceBuilder({ onAddCompetence }) {
     );
   }
 
-  function addCompetence() {
+  function addOrUpdateCompetence() {
     if (
       !currentCompetence.topic.trim() ||
       !currentCompetence.description.trim()
@@ -45,7 +71,7 @@ function CompetenceBuilder({ onAddCompetence }) {
       return;
     }
 
-    onAddCompetence({
+    onSaveCompetence({
       ...currentCompetence,
       skills: currentSkills.join(', '),
     });
@@ -54,6 +80,15 @@ function CompetenceBuilder({ onAddCompetence }) {
     setCurrentSkills([]);
     setSkillInputText('');
   }
+
+  function cancelEditing() {
+    setCurrentCompetence(DEFAULT_COMPETENCE);
+    setCurrentSkills([]);
+    setSkillInputText('');
+    onCancelEditing();
+  }
+
+  const isEditing = editingIndex !== null;
 
   return (
     <section className="form-card">
@@ -150,12 +185,21 @@ function CompetenceBuilder({ onAddCompetence }) {
       </div>
 
       <div className="form-actions form-actions--builder">
+        {isEditing ? (
+          <button
+            type="button"
+            className="secondary-button"
+            onClick={cancelEditing}
+          >
+            Cancel editing
+          </button>
+        ) : null}
         <button
           type="button"
           className="primary-button"
-          onClick={addCompetence}
+          onClick={addOrUpdateCompetence}
         >
-          Add competence
+          {isEditing ? 'Update competence' : 'Add competence'}
         </button>
       </div>
     </section>

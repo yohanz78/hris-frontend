@@ -5,10 +5,14 @@ const API_BASE_URL = (
 ).replace(/\/$/, '');
 
 export async function requestJson(path, options = {}) {
+  const isFormData = options.body instanceof FormData;
+
   const response = await fetch(`${API_BASE_URL}${path}`, {
     headers: {
       Accept: 'application/json',
-      ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+      ...(!isFormData && options.body
+        ? { 'Content-Type': 'application/json' }
+        : {}),
       ...(options.headers || {}),
     },
     ...options,

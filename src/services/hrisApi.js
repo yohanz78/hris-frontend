@@ -45,3 +45,10 @@ export async function createEmployee(payload) {
     body: JSON.stringify(payload),
   });
 }
+
+export async function extractDocument(formData) {
+  return requestJson('/employees/extract-document', {
+    method: 'POST',
+    body: formData,
+  });
+}

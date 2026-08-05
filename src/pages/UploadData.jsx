@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import AppHeader from '../components/AppHeader';
+import DocumentDropzone from '../components/DocumentDropzone';
 import EmployeeBaseForm from '../components/EmployeeBaseForm';
 import CompetenceBuilder from '../components/CompetenceBuilder';
 import CompetenceTable from '../components/CompetenceTable';
-import { createEmployee } from '../services/hrisApi';
+import { createEmployee, extractDocument } from '../services/hrisApi';
 
 const DEFAULT_EMPLOYEE_DATA = {
   full_name: '',
@@ -16,8 +17,12 @@ function UploadData() {
   const [employeeData, setEmployeeData] = useState(DEFAULT_EMPLOYEE_DATA);
   const [competencesList, setCompetencesList] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isExtracting, setIsExtracting] = useState(false);
+  const [editingIndex, setEditingIndex] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [extractionError, setExtractionError] = useState('');
+  const builderRef = useRef(null);
 
   function handleEmployeeFieldChange(field, value) {
     setEmployeeData((currentValue) => ({
@@ -26,21 +31,99 @@ function UploadData() {
     }));
   }
 
-  function handleAddCompetence(competence) {
-    setCompetencesList((currentValue) => [...currentValue, competence]);
+  function handleSaveCompetence(competence) {
+    setCompetencesList((currentValue) => {
+      if (editingIndex === null) {
+        return [...currentValue, competence];
+      }
+
+      return currentValue.map((currentCompetence, index) =>
+        index === editingIndex ? competence : currentCompetence
+      );
+    });
+
+    setEditingIndex(null);
     setErrorMessage('');
     setSuccessMessage('');
+  }
+
+  function applyExtractedEmployee(extractedEmployee) {
+    setEmployeeData({
+      full_name: extractedEmployee.full_name || '',
+      email: extractedEmployee.email || '',
+      phone_number: extractedEmployee.phone_number || '',
+      domicile: extractedEmployee.domicile || '',
+    });
+
+    setCompetencesList(
+      Array.isArray(extractedEmployee.competences)
+        ? extractedEmployee.competences.map((competence) => ({
+            type: competence.type || 'Certificate',
+            topic: competence.topic || '',
+            description: competence.description || '',
+            skills: competence.skills || '',
+          }))
+        : []
+    );
+
+    setEditingIndex(null);
+  }
+
+  async function handleExtractDocument(file) {
+    const formData = new FormData();
+    formData.append('document', file);
+
+    setIsExtracting(true);
+    setExtractionError('');
+    setErrorMessage('');
+    setSuccessMessage('');
+
+    try {
+      const result = await extractDocument(formData);
+      const extractedEmployee = result?.extracted_employee;
+
+      if (!extractedEmployee) {
+        throw new Error('The backend did not return extracted employee data.');
+      }
+
+      applyExtractedEmployee(extractedEmployee);
+    } catch (extractError) {
+      setExtractionError(
+        extractError.message || 'Unable to extract data from the document.'
+      );
+    } finally {
+      setIsExtracting(false);
+    }
   }
 
   function handleRemoveCompetence(indexToRemove) {
     setCompetencesList((currentValue) =>
       currentValue.filter((_, index) => index !== indexToRemove)
     );
+
+    if (editingIndex === indexToRemove) {
+      setEditingIndex(null);
+      return;
+    }
+
+    if (editingIndex !== null && editingIndex > indexToRemove) {
+      setEditingIndex(editingIndex - 1);
+    }
+  }
+
+  function handleEditCompetence(indexToEdit) {
+    setEditingIndex(indexToEdit);
+    builderRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function handleCancelEditing() {
+    setEditingIndex(null);
   }
 
   function resetForm() {
     setEmployeeData(DEFAULT_EMPLOYEE_DATA);
     setCompetencesList([]);
+    setEditingIndex(null);
   }
 
   async function handleSubmit(event) {
@@ -61,6 +144,7 @@ function UploadData() {
     setIsSubmitting(true);
     setErrorMessage('');
     setSuccessMessage('');
+    setExtractionError('');
 
     try {
       const payload = {
@@ -111,17 +195,36 @@ function UploadData() {
           <div className="success-banner">{successMessage}</div>
         ) : null}
         {errorMessage ? <div className="alert">{errorMessage}</div> : null}
+        {extractionError ? (
+          <div className="alert">{extractionError}</div>
+        ) : null}
 
         <form className="upload-form" onSubmit={handleSubmit}>
+          <DocumentDropzone
+            isExtracting={isExtracting}
+            onExtractDocument={handleExtractDocument}
+          />
+
           <EmployeeBaseForm
             employeeData={employeeData}
             onFieldChange={handleEmployeeFieldChange}
           />
 
-          <CompetenceBuilder onAddCompetence={handleAddCompetence} />
+          <div ref={builderRef}>
+            <CompetenceBuilder
+              editingIndex={editingIndex}
+              editingCompetence={
+                editingIndex !== null ? competencesList[editingIndex] : null
+              }
+              onSaveCompetence={handleSaveCompetence}
+              onCancelEditing={handleCancelEditing}
+            />
+          </div>
 
           <CompetenceTable
             competencesList={competencesList}
+            editingIndex={editingIndex}
+            onEditCompetence={handleEditCompetence}
             onRemoveCompetence={handleRemoveCompetence}
           />
 

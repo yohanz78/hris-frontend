@@ -1,4 +1,9 @@
-function CompetenceTable({ competencesList, onRemoveCompetence }) {
+function CompetenceTable({
+  competencesList,
+  editingIndex,
+  onEditCompetence,
+  onRemoveCompetence,
+}) {
   return (
     <section className="form-card">
       <div className="form-card__header">
@@ -18,7 +23,7 @@ function CompetenceTable({ competencesList, onRemoveCompetence }) {
                   <th>Topic</th>
                   <th>Description</th>
                   <th>Skills</th>
-                  <th aria-label="Actions" />
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -33,7 +38,14 @@ function CompetenceTable({ competencesList, onRemoveCompetence }) {
                     <td>
                       <button
                         type="button"
-                        className="text-button"
+                        className="text-button button-edit"
+                        onClick={() => onEditCompetence(index)}
+                      >
+                        {editingIndex === index ? 'Editing' : 'Edit'}
+                      </button>
+                      <button
+                        type="button"
+                        className="text-button button-remove"
                         onClick={() => onRemoveCompetence(index)}
                       >
                         Remove

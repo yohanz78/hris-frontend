@@ -204,6 +204,20 @@
   font-weight: 700;
 }
 
+.button-edit {
+  padding: 10px 14px;
+  background: transparent;
+  color: #2563eb;
+  font-weight: 700;
+}
+
+.button-remove {
+  padding: 0;
+  background: transparent;
+  color: #ef4444;
+  font-weight: 700;
+}
+
 .search-field {
   display: grid;
   gap: 8px;
@@ -473,6 +487,60 @@ td {
   padding: 32px;
 }
 
+.dropzone {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  gap: 8px;
+  padding: 22px;
+  margin-bottom: 18px;
+  border-radius: 24px;
+  border: 2px dashed rgba(37, 99, 235, 0.32);
+  background: rgba(255, 255, 255, 0.68);
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease;
+}
+
+.dropzone:hover,
+.dropzone--active {
+  transform: translateY(-1px);
+  border-color: rgba(37, 99, 235, 0.6);
+  background: rgba(239, 246, 255, 0.9);
+}
+
+.dropzone--loading {
+  cursor: progress;
+}
+
+.dropzone__content {
+  position: relative;
+  z-index: 1;
+}
+
+.dropzone__content h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  letter-spacing: -0.03em;
+}
+
+.dropzone__content p {
+  margin: 0;
+  color: #475569;
+}
+
+.dropzone__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(15, 23, 42, 0.08),
+    rgba(37, 99, 235, 0.15)
+  );
+}
+
 .upload-hero {
   display: flex;
   justify-content: space-between;
@@ -663,6 +731,10 @@ td {
   background: rgba(220, 252, 231, 0.82);
 }
 
+.alert {
+  color: #991b1b;
+}
+
 .table-cell--description {
   max-width: 280px;
 }
@@ -692,6 +764,10 @@ td {
 
   .upload-shell {
     padding: 20px;
+  }
+
+  .dropzone {
+    padding: 18px;
   }
 
   .upload-hero {
@@ -728,6 +804,10 @@ td {
 
   .upload-shell {
     padding: 14px;
+  }
+
+  .dropzone {
+    padding: 16px;
   }
 
   .form-grid--base,
