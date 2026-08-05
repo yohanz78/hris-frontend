@@ -54,6 +54,8 @@ function Dashboard() {
               employeeDetailCache={dashboard.employeeDetailCache}
               isDetailLoading={dashboard.isDetailLoading}
               onToggleRow={dashboard.handleToggleRow}
+              isDeleting={dashboard.isDeleting}
+              onDeleteEmployee={dashboard.handleDeleteEmployee}
             />
           </section>
         </main>

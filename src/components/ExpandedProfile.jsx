@@ -1,4 +1,14 @@
-function ExpandedProfile({ employee, employeeDetail, isDetailLoading }) {
+import { useState } from 'react';
+
+function ExpandedProfile({
+  employee,
+  employeeDetail,
+  isDetailLoading,
+  isDeleting,
+  onDeleteEmployee,
+}) {
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+
   if (isDetailLoading && !employeeDetail) {
     return (
       <tr className="expanded-row">
@@ -21,6 +31,14 @@ function ExpandedProfile({ employee, employeeDetail, isDetailLoading }) {
         </td>
       </tr>
     );
+  }
+
+  function handleDeleteClick() {
+    if (!confirmingDelete) {
+      setConfirmingDelete(true);
+      return;
+    }
+    onDeleteEmployee(employee.id);
   }
 
   return (
@@ -83,6 +101,22 @@ function ExpandedProfile({ employee, employeeDetail, isDetailLoading }) {
                 </p>
               )}
             </section>
+          </div>
+
+          <div className="expanded-panel__actions">
+            <button
+              type="button"
+              className={`danger-button ${confirmingDelete ? 'danger-button--confirm' : ''}`}
+              onClick={handleDeleteClick}
+              onBlur={() => setConfirmingDelete(false)}
+              disabled={isDeleting}
+            >
+              {isDeleting
+                ? 'Deleting...'
+                : confirmingDelete
+                  ? 'Confirm delete?'
+                  : 'Delete employee'}
+            </button>
           </div>
         </div>
       </td>

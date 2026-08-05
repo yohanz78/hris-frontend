@@ -185,6 +185,12 @@
   align-items: center;
 }
 
+.expanded-panel__actions {
+  margin-top: 50px;
+  display: flex;
+  justify-content: center;
+}
+
 .filter-panel__header,
 .content-panel__header {
   margin-bottom: 16px;
@@ -215,6 +221,14 @@
   padding: 0;
   background: transparent;
   color: #ef4444;
+  font-weight: 700;
+}
+
+.danger-button {
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: #ef4444;
+  color: #f8fafc;
   font-weight: 700;
 }
 

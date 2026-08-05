@@ -7,6 +7,8 @@ function EmployeeTable({
   employeeDetailCache,
   isDetailLoading,
   onToggleRow,
+  isDeleting,
+  onDeleteEmployee,
 }) {
   if (!employees.length) {
     return (
@@ -41,6 +43,8 @@ function EmployeeTable({
                   employeeDetail={employeeDetail}
                   isDetailLoading={isDetailLoading}
                   onToggleRow={onToggleRow}
+                  isDeleting={isDeleting}
+                  onDeleteEmployee={onDeleteEmployee}
                 />
               );
             })}
@@ -57,6 +61,8 @@ function EmployeeFragment({
   employeeDetail,
   isDetailLoading,
   onToggleRow,
+  isDeleting,
+  onDeleteEmployee,
 }) {
   return (
     <>
@@ -70,6 +76,8 @@ function EmployeeFragment({
           employee={employee}
           employeeDetail={employeeDetail}
           isDetailLoading={isDetailLoading}
+          isDeleting={isDeleting}
+          onDeleteEmployee={onDeleteEmployee}
         />
       ) : null}
     </>

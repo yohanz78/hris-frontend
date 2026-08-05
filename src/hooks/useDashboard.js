@@ -1,5 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { fetchEmployeeDetail, fetchEmployees } from '../services/hrisApi';
+
+import {
+  fetchEmployeeDetail,
+  fetchEmployees,
+  deleteEmployee,
+} from '../services/hrisApi';
+
 import {
   DEFAULT_FILTERS,
   getEmployeeSkills,
@@ -16,6 +22,7 @@ export function useDashboard() {
   const [isFiltering, setIsFiltering] = useState(false);
   const [isDetailLoading, setIsDetailLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const detailInFlightRef = useRef(new Set());
   const filterSignatureRef = useRef('');
@@ -218,6 +225,32 @@ export function useDashboard() {
     );
   }
 
+  async function handleDeleteEmployee(employeeId) {
+    setIsDeleting(true);
+    setError('');
+
+    try {
+      await deleteEmployee(employeeId);
+
+      setEmployeesList((current) =>
+        current.filter((employee) => employee.id !== employeeId)
+      );
+      setFilteredList((current) =>
+        current.filter((employee) => employee.id !== employeeId)
+      );
+      setEmployeeDetailCache((current) => {
+        const nextCache = { ...current };
+        delete nextCache[employeeId];
+        return nextCache;
+      });
+      setExpandedRowId((current) => (current === employeeId ? null : current));
+    } catch (deleteError) {
+      setError(deleteError.message || 'Unable to delete employee.');
+    } finally {
+      setIsDeleting(false);
+    }
+  }
+
   return {
     employeesList,
     filteredList,
@@ -230,6 +263,7 @@ export function useDashboard() {
     error,
     availableSkills,
     availableDomiciles,
+    isDeleting,
     stats: {
       totalEmployees: employeesList.length,
       filteredEmployees: filteredList.length,
@@ -239,5 +273,6 @@ export function useDashboard() {
     handleSearchSkillChange,
     handleClearFilters,
     handleToggleRow,
+    handleDeleteEmployee,
   };
 }

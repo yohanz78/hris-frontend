@@ -52,3 +52,9 @@ export async function extractDocument(formData) {
     body: formData,
   });
 }
+
+export async function deleteEmployee(id) {
+  return requestJson(`/employees/${id}`, {
+    method: 'DELETE',
+  });
+}
