@@ -12,7 +12,7 @@ export function normalizeTokens(value = '') {
 }
 
 export function getEmployeeSkills(employee) {
-  return normalizeTokens(employee?.skills_preview || '');
+  return normalizeTokens(employee?.skills || '');
 }
 
 export function getFilterSignature(filters) {

@@ -144,6 +144,10 @@ export function useDashboard() {
       setError('');
 
       const employees = await fetchEmployees(nextFilters);
+
+      // ✅ only apply this response if it's still the latest requested filter
+      if (filterSignatureRef.current !== nextSignature) return;
+
       setFilteredList(employees);
       setExpandedRowId((currentExpandedRowId) =>
         employees.some((employee) => employee.id === currentExpandedRowId)
@@ -155,6 +159,20 @@ export function useDashboard() {
     } finally {
       setIsFiltering(false);
     }
+  }
+
+  const searchDebounceRef = useRef(null);
+
+  function handleSearchSkillChange(event) {
+    const value = event.target.value;
+
+    // update the input immediately so typing feels responsive
+    setFilters((current) => ({ ...current, searchSkill: value }));
+
+    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+    searchDebounceRef.current = setTimeout(() => {
+      applyFilters({ ...filters, searchSkill: value });
+    }, 300);
   }
 
   function handleSkillToggle(skill) {
